@@ -3,21 +3,47 @@
 <head>
   <meta charset="UTF-8">
   <title>Sake Leaderboard 地址提取</title>
+  <style>
+    body {
+      font-family: Arial;
+      padding: 30px;
+      background-color: #f9f9f9;
+    }
+    input, button {
+      padding: 8px;
+      font-size: 16px;
+      margin-right: 10px;
+    }
+    pre {
+      margin-top: 20px;
+      background: #f0f0f0;
+      padding: 15px;
+      border: 1px solid #ccc;
+      white-space: pre-wrap;
+    }
+  </style>
 </head>
 <body>
-  <h2>Sake 地址排行榜</h2>
-  <label>要提取前几个地址：</label>
+  <h2>Sake 地址排行榜提取</h2>
+  <label>提取前几个地址：</label>
   <input type="number" id="countInput" value="10">
   <button onclick="getAddresses()">提取</button>
-  <pre id="result"></pre>
+
+  <pre id="result">点击按钮后将在此处显示地址和积分</pre>
 
   <script>
     async function getAddresses() {
       const count = parseInt(document.getElementById("countInput").value);
-      const res = await fetch('/api/proxy');
+      const res = await fetch('/api/proxy');  // 通过 Vercel 代理请求
       const json = await res.json();
-      const addresses = json.data.slice(0, count).map(item => item[0]);
-      document.getElementById("result").textContent = addresses.join('\n');
+
+      const lines = json.data.slice(0, count).map(item => {
+        const addr = item[0];
+        const score = Math.floor(parseFloat(item[1]));  // 积分取整
+        return `${addr}  ${score}`;
+      });
+
+      document.getElementById("result").textContent = lines.join('\n');
     }
   </script>
 </body>
