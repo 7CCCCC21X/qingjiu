@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>Sake Leaderboard 地址提取</title>
+</head>
+<body>
+  <h2>Sake 地址排行榜</h2>
+  <label>要提取前几个地址：</label>
+  <input type="number" id="countInput" value="10">
+  <button onclick="getAddresses()">提取</button>
+  <pre id="result"></pre>
+
+  <script>
+    async function getAddresses() {
+      const count = parseInt(document.getElementById("countInput").value);
+      const res = await fetch('/api/proxy');
+      const json = await res.json();
+      const addresses = json.data.slice(0, count).map(item => item[0]);
+      document.getElementById("result").textContent = addresses.join('\n');
+    }
+  </script>
+</body>
+</html>
