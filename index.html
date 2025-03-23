@@ -14,12 +14,21 @@
       font-size: 16px;
       margin-right: 10px;
     }
-    pre {
+    .result {
       margin-top: 20px;
       background: #f0f0f0;
       padding: 15px;
       border: 1px solid #ccc;
-      white-space: pre-wrap;
+    }
+    .address-line {
+      margin-bottom: 5px;
+    }
+    a {
+      color: #0077cc;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
@@ -29,21 +38,24 @@
   <input type="number" id="countInput" value="10">
   <button onclick="getAddresses()">提取</button>
 
-  <pre id="result">点击按钮后将在此处显示地址和积分</pre>
+  <div id="result" class="result">点击按钮后将在此处显示地址和积分</div>
 
   <script>
     async function getAddresses() {
       const count = parseInt(document.getElementById("countInput").value);
-      const res = await fetch('/api/proxy');  // 通过 Vercel 代理请求
+      const res = await fetch('/api/proxy'); // 通过 Vercel 代理请求
       const json = await res.json();
 
-      const lines = json.data.slice(0, count).map(item => {
-        const addr = item[0];
-        const score = Math.floor(parseFloat(item[1]));  // 积分取整
-        return `${addr}  ${score}`;
-      });
+      const container = document.getElementById("result");
+      container.innerHTML = ""; // 清空之前内容
 
-      document.getElementById("result").textContent = lines.join('\n');
+      json.data.slice(0, count).forEach(([address, rawScore]) => {
+        const score = Math.floor(parseFloat(rawScore));
+        const line = document.createElement("div");
+        line.className = "address-line";
+        line.innerHTML = `<a href="https://debank.com/profile/${address}" target="_blank">${address}</a> - ${score}`;
+        container.appendChild(line);
+      });
     }
   </script>
 </body>
